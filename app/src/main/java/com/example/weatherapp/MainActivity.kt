@@ -17,8 +17,8 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    public var zipCode = "0"
-    lateinit var apiCall: String
+    var zipCode = ""
+    //lateinit var apiCall: String
 
 
     // variables to be used for changing location
@@ -59,11 +59,32 @@ class MainActivity : AppCompatActivity() {
         zipCode = intent.getStringExtra("zipCode").toString()
 
 
-        //Response API data
+        //Call get data function
+        getData()
+
+        //Refresh button
+        refreshView.setOnClickListener { getData() }
+
+
+    }
+
+
+    // Get zipCode from another page
+    private fun getZipCode() {
+        val intent = Intent(this, GetZipCode::class.java)
+        startActivity(intent)
+    }
+
+
+    //Get and response data from API
+    private fun getData(){
+
         val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
 
         apiInterface?.getWeatherData()?.enqueue(object : Callback<WeatherData> {
             @RequiresApi(Build.VERSION_CODES.N)
+
+            //onResponse function
             override fun onResponse(call: Call<WeatherData>, response: Response<WeatherData>) {
 
                 val city = response.body()!!.name
@@ -101,7 +122,6 @@ class MainActivity : AppCompatActivity() {
 
                 val sunsetTime = response.body()!!.sys.sunset
                 Log.d("weatherInfo", sunsetTime.toString())
-
 
 
                 //print to UI here
@@ -154,23 +174,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
 
+            }
 
-
-            } //onResponse function
-
+            //onFailure function
             override fun onFailure(call: Call<WeatherData>, t: Throwable) {
                 Log.d("retrofit", "onFailure: ${t.message.toString()}")
             }
 
         })
 
-
-
-    }
-
-    // Get zipCode from another page
-    private fun getZipCode() {
-        val intent = Intent(this, GetZipCode::class.java)
-        startActivity(intent)
     }
 }
