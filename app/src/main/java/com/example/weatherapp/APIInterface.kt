@@ -1,10 +1,14 @@
 package com.example.weatherapp
 
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface APIInterface {
 
-    @GET("weather?zip=94040,us&appid=a58df9fbb276fef7ea66f6ea2d700783&units=metric")
+    @GET("weather?")
 
-    fun getWeatherData():retrofit2.Call<WeatherData>
+    fun getWeatherData(@Query("zip") zipCode:String,
+                       @Query("appid") apiKey:String,
+                       @Query("units") units:String ):retrofit2.Call<WeatherData>
+
 }

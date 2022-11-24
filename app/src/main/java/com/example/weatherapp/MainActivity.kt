@@ -18,8 +18,6 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     var zipCode = ""
-    //lateinit var apiCall: String
-
 
     // variables to be used for changing location
     lateinit var location: TextView
@@ -64,8 +62,6 @@ class MainActivity : AppCompatActivity() {
 
         //Refresh button
         refreshView.setOnClickListener { getData() }
-
-
     }
 
 
@@ -79,109 +75,121 @@ class MainActivity : AppCompatActivity() {
     //Get and response data from API
     private fun getData(){
 
-        val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
+            val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
 
-        apiInterface?.getWeatherData()?.enqueue(object : Callback<WeatherData> {
-            @RequiresApi(Build.VERSION_CODES.N)
+            val apiKey = "a58df9fbb276fef7ea66f6ea2d700783"
+            val units = "metric"
 
-            //onResponse function
-            override fun onResponse(call: Call<WeatherData>, response: Response<WeatherData>) {
+            apiInterface?.getWeatherData(zipCode, apiKey, units)
+                ?.enqueue(object : Callback<WeatherData> {
+                    @RequiresApi(Build.VERSION_CODES.N)
 
-                val city = response.body()!!.name
-                Log.d("weatherInfo", city)
+                    //onResponse function
+                    override fun onResponse(
+                        call: Call<WeatherData>,
+                        response: Response<WeatherData>
+                    ) {
 
-                val country = response.body()!!.sys.country
-                Log.d("weatherInfo", country)
+                        val city = response.body()!!.name
+                        Log.d("weatherInfo", city)
 
-                val date = response.body()!!.dt
-                Log.d("weatherInfo", date.toString())
+                        val country = response.body()!!.sys.country
+                        Log.d("weatherInfo", country)
 
-                var weatherDescription = response.body()!!.weather[0].description
-                Log.d("weatherInfo", weatherDescription)
+                        val date = response.body()!!.dt
+                        Log.d("weatherInfo", date.toString())
 
-                val currentTemp = response.body()!!.main.temp
-                Log.d("weatherInfo", currentTemp.toString())
+                        val weatherDescription = response.body()!!.weather[0].description
+                        Log.d("weatherInfo", weatherDescription)
 
-                val lowestTemp = response.body()!!.main.temp_min
-                Log.d("weatherInfo", lowestTemp.toString())
+                        val currentTemp = response.body()!!.main.temp
+                        Log.d("weatherInfo", currentTemp.toString())
 
-                val highestTemp = response.body()!!.main.temp_max
-                Log.d("weatherInfo", highestTemp.toString())
+                        val lowestTemp = response.body()!!.main.temp_min
+                        Log.d("weatherInfo", lowestTemp.toString())
 
-                val pressure = response.body()!!.main.pressure
-                Log.d("weatherInfo", pressure.toString())
+                        val highestTemp = response.body()!!.main.temp_max
+                        Log.d("weatherInfo", highestTemp.toString())
 
-                val humidity = response.body()!!.main.humidity
-                Log.d("weatherInfo", humidity.toString())
+                        val pressure = response.body()!!.main.pressure
+                        Log.d("weatherInfo", pressure.toString())
 
-                val windSpeed = response.body()!!.wind.speed
-                Log.d("weatherInfo", windSpeed.toString())
+                        val humidity = response.body()!!.main.humidity
+                        Log.d("weatherInfo", humidity.toString())
 
-                val sunriseTime = response.body()!!.sys.sunrise
-                Log.d("weatherInfo", sunriseTime.toString())
+                        val windSpeed = response.body()!!.wind.speed
+                        Log.d("weatherInfo", windSpeed.toString())
 
-                val sunsetTime = response.body()!!.sys.sunset
-                Log.d("weatherInfo", sunsetTime.toString())
+                        val sunriseTime = response.body()!!.sys.sunrise
+                        Log.d("weatherInfo", sunriseTime.toString())
 
-
-                //print to UI here
-                location.text = "$city, $country"
-                updateTimeStamp.text =
-                    "Updated at: " + SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH)
-                        .format(Date(date.toLong() * 1000))
-                weatherDes.text = weatherDescription
-
-                temp.text = "${String.format("%.0f", currentTemp.toFloat())}" + "°C"
-                lowTemp.text = "Low: " + "${String.format("%.1f", lowestTemp.toFloat())}" + "°C"
-                maxTemp.text = "High: " + "${String.format("%.1f", highestTemp.toFloat())}" + "°C"
-                sunrise.text = SimpleDateFormat(
-                    "HH:mm a",
-                    Locale.ENGLISH
-                ).format(Date(sunriseTime.toLong() * 1000))
-                sunset.text =
-                    SimpleDateFormat("HH:mm a", Locale.ENGLISH).format(Date(sunsetTime.toLong() * 1000))
-                windVel.text = windSpeed.toString()
-                pressureTV.text = pressure.toString()
-                humidityTV.text = humidity.toString()
-
-                temp.setOnClickListener {
-                    if(temp.text.contains("℃")){
-                        val fahrenheit = currentTemp.toFloat() * 1.800 + 32
-                        val tempMaxF = highestTemp.toFloat() * 1.800 + 32
-                        val tempMinF = lowestTemp.toFloat() * 1.800 + 32
-
-                        val solution = String.format("%.0f", fahrenheit)
-                        val solutiontempMax = String.format("%.1f", tempMaxF)
-                        val solutiontempMin = String.format("%.1f", tempMinF)
-
-                        temp.text= solution+" F"
-                        maxTemp.text="High: "+solutiontempMax+" F"
-                        lowTemp.text="Low: "+solutiontempMin+" F"
-                    }else{
-                        val celsius = currentTemp.toFloat()
-                        val tempMax = highestTemp.toFloat()
-                        val tempMin = lowestTemp.toFloat()
+                        val sunsetTime = response.body()!!.sys.sunset
+                        Log.d("weatherInfo", sunsetTime.toString())
 
 
-                        val solution = String.format("%.0f", celsius)
-                        val solutiontempMax = String.format("%.1f", tempMax)
-                        val solutiontempMin = String.format("%.1f", tempMin)
-                        temp.text= solution+"℃"
-                        maxTemp.text="High: "+solutiontempMax+"℃"
-                        lowTemp.text="Low: "+solutiontempMin+"℃"
+                        //print to UI here
+                        location.text = "$city, $country"
+                        updateTimeStamp.text =
+                            "Updated at: " + SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.ENGLISH)
+                                .format(Date(date.toLong() * 1000))
+                        weatherDes.text = weatherDescription
+
+                        temp.text = "${String.format("%.0f", currentTemp.toFloat())}" + "°C"
+                        lowTemp.text =
+                            "Low: " + "${String.format("%.1f", lowestTemp.toFloat())}" + "°C"
+                        maxTemp.text =
+                            "High: " + "${String.format("%.1f", highestTemp.toFloat())}" + "°C"
+                        sunrise.text = SimpleDateFormat(
+                            "HH:mm a",
+                            Locale.ENGLISH
+                        ).format(Date(sunriseTime.toLong() * 1000))
+                        sunset.text =
+                            SimpleDateFormat(
+                                "HH:mm a",
+                                Locale.ENGLISH
+                            ).format(Date(sunsetTime.toLong() * 1000))
+                        windVel.text = windSpeed.toString()
+                        pressureTV.text = pressure.toString()
+                        humidityTV.text = humidity.toString()
+
+                        temp.setOnClickListener {
+                            if (temp.text.contains("℃")) {
+                                val fahrenheit = currentTemp.toFloat() * 1.800 + 32
+                                val tempMaxF = highestTemp.toFloat() * 1.800 + 32
+                                val tempMinF = lowestTemp.toFloat() * 1.800 + 32
+
+                                val solution = String.format("%.0f", fahrenheit)
+                                val solutiontempMax = String.format("%.1f", tempMaxF)
+                                val solutiontempMin = String.format("%.1f", tempMinF)
+
+                                temp.text = solution + " F"
+                                maxTemp.text = "High: " + solutiontempMax + " F"
+                                lowTemp.text = "Low: " + solutiontempMin + " F"
+                            } else {
+                                val celsius = currentTemp.toFloat()
+                                val tempMax = highestTemp.toFloat()
+                                val tempMin = lowestTemp.toFloat()
+
+
+                                val solution = String.format("%.0f", celsius)
+                                val solutiontempMax = String.format("%.1f", tempMax)
+                                val solutiontempMin = String.format("%.1f", tempMin)
+                                temp.text = solution + "℃"
+                                maxTemp.text = "High: " + solutiontempMax + "℃"
+                                lowTemp.text = "Low: " + solutiontempMin + "℃"
+                            }
+
+                        }
+
+
                     }
 
-                }
+                    //onFailure function
+                    override fun onFailure(call: Call<WeatherData>, t: Throwable) {
+                        Log.d("retrofit", "onFailure: ${t.message.toString()}")
+                    }
 
+                })
+        }
 
-            }
-
-            //onFailure function
-            override fun onFailure(call: Call<WeatherData>, t: Throwable) {
-                Log.d("retrofit", "onFailure: ${t.message.toString()}")
-            }
-
-        })
-
-    }
 }
