@@ -1,5 +1,6 @@
 package com.example.weatherapp
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.os.Build
@@ -17,7 +18,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    var zipCode = ""
+    var zipCode = "94040"
 
     // variables to be used for changing location
     lateinit var location: TextView
@@ -52,13 +53,21 @@ class MainActivity : AppCompatActivity() {
         refreshView = findViewById(R.id.refreshImageView)
 
 
+        //get new zip code from another intent and store in temporary variable
+        var tempZipCode = intent.getStringExtra("zipCode")
+
+        if (tempZipCode != null){
+            zipCode = tempZipCode.toString()
+        }
+
+
         //OnClick listener to change the location
         location.setOnClickListener { getZipCode() }
-        zipCode = intent.getStringExtra("zipCode").toString()
 
 
         //Call get data function
         getData()
+
 
         //Refresh button
         refreshView.setOnClickListener { getData() }
@@ -73,12 +82,13 @@ class MainActivity : AppCompatActivity() {
 
 
     //Get and response data from API
+    @SuppressLint("SuspiciousIndentation")
     private fun getData(){
 
-            val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
+        val apiInterface = APIClient().getClient()?.create(APIInterface::class.java)
 
-            val apiKey = "a58df9fbb276fef7ea66f6ea2d700783"
-            val units = "metric"
+        val apiKey = "a58df9fbb276fef7ea66f6ea2d700783"
+        val units = "metric"
 
             apiInterface?.getWeatherData(zipCode, apiKey, units)
                 ?.enqueue(object : Callback<WeatherData> {
